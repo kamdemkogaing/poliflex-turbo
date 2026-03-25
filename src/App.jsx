@@ -1,21 +1,54 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function PoliFlexTurboSamplePage() {
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
   const standardColors = [
-    { code: "4901", name: "White", swatch: "#f5f5f5" },
-    { code: "4991", name: "Black", swatch: "#1f1f1f" },
-    { code: "4951", name: "Light Grey", swatch: "#cfcfcf" },
-    { code: "4980", name: "Anthracite", swatch: "#4a4a4a" },
-    { code: "4919", name: "Lemon Yellow", swatch: "#f4e04d" },
-    { code: "4934", name: "Bright Yellow", swatch: "#f0c400" },
-    { code: "4955", name: "Red", swatch: "#c62828" },
-    { code: "4982", name: "Royal Blue", swatch: "#1e4fd1" },
-    { code: "4965", name: "Navy", swatch: "#1f2f5a" },
-    { code: "4977", name: "Mint", swatch: "#98e2d0" },
-    { code: "4933", name: "Bright Lime", swatch: "#84cc16" },
-    { code: "4914", name: "Purple", swatch: "#7c3aed" },
+    { code: "4901", name: "White", swatch: "#f5f5f5", category: "standard" },
+    { code: "4991", name: "Black", swatch: "#1f1f1f", category: "standard" },
+    {
+      code: "4951",
+      name: "Light Grey",
+      swatch: "#cfcfcf",
+      category: "standard",
+    },
+    {
+      code: "4980",
+      name: "Anthracite",
+      swatch: "#4a4a4a",
+      category: "standard",
+    },
+    {
+      code: "4919",
+      name: "Lemon Yellow",
+      swatch: "#f4e04d",
+      category: "standard",
+    },
+    {
+      code: "4934",
+      name: "Bright Yellow",
+      swatch: "#f0c400",
+      category: "standard",
+    },
+    { code: "4955", name: "Red", swatch: "#c62828", category: "standard" },
+    {
+      code: "4982",
+      name: "Royal Blue",
+      swatch: "#1e4fd1",
+      category: "standard",
+    },
+    { code: "4965", name: "Navy", swatch: "#1f2f5a", category: "standard" },
+    { code: "4977", name: "Mint", swatch: "#98e2d0", category: "standard" },
+    {
+      code: "4933",
+      name: "Bright Lime",
+      swatch: "#84cc16",
+      category: "standard",
+    },
+    {
+      code: "4914",
+      name: "Purple",
+      swatch: "#7c3aed",
+      category: "standard",
+    },
   ];
 
   const effectColors = [
@@ -23,256 +56,376 @@ export default function PoliFlexTurboSamplePage() {
       code: "4920",
       name: "Gold Metallic",
       swatch: "linear-gradient(135deg, #c69214, #f4d06f)",
+      category: "effect",
     },
     {
       code: "4930",
       name: "Silver Metallic",
       swatch: "linear-gradient(135deg, #8d99ae, #edf2f4)",
+      category: "effect",
     },
     {
       code: "4922",
       name: "Rose Gold",
       swatch: "linear-gradient(135deg, #b76e79, #f7cac9)",
+      category: "effect",
     },
     {
       code: "4924",
       name: "Bright Copper",
       swatch: "linear-gradient(135deg, #b87333, #e6b89c)",
+      category: "effect",
     },
   ];
 
   const neonColors = [
-    { code: "4940", name: "Neon Yellow", swatch: "#f6ff00" },
-    { code: "4941", name: "Neon Green", swatch: "#39ff14" },
-    { code: "4942", name: "Neon Orange", swatch: "#ff6a00" },
-    { code: "4943", name: "Neon Pink", swatch: "#ff2bd6" },
+    { code: "4940", name: "Neon Yellow", swatch: "#f6ff00", category: "neon" },
+    { code: "4941", name: "Neon Green", swatch: "#39ff14", category: "neon" },
+    {
+      code: "4942",
+      name: "Neon Orange",
+      swatch: "#ff6a00",
+      category: "neon",
+    },
+    { code: "4943", name: "Neon Pink", swatch: "#ff2bd6", category: "neon" },
   ];
 
-  const ColorCard = ({ color }) => (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md cursor-pointer">
-      <div
-        className="mb-3 h-6 w-full rounded-xl border border-zinc-200"
+  const allColors = [...standardColors, ...effectColors, ...neonColors];
+
+  const sizes = [
+    { label: "5 lfm x 50 cm", value: "5lfm-x-50cm", price: 26.0 },
+    { label: "25 lfm x 50 cm", value: "25lfm-x-50cm", price: 119.0 },
+  ];
+
+  const [selectedCategory, setSelectedCategory] = useState("standard");
+  const [selectedSize, setSelectedSize] = useState(sizes[0]);
+
+  const categoryColors = useMemo(() => {
+    return allColors.filter((color) => color.category === selectedCategory);
+  }, [allColors, selectedCategory]);
+
+  const [selectedColorCode, setSelectedColorCode] = useState("4901");
+
+  const selectedColor = useMemo(() => {
+    return (
+      allColors.find((color) => color.code === selectedColorCode) ||
+      allColors[0]
+    );
+  }, [allColors, selectedColorCode]);
+
+  const filteredColorOptions = useMemo(() => {
+    return allColors.filter((color) => color.category === selectedCategory);
+  }, [allColors, selectedCategory]);
+
+  const quantity = 1;
+  const totalPrice = (selectedSize.price * quantity)
+    .toFixed(2)
+    .replace(".", ",");
+
+  const categoryLabels = {
+    standard: "Standardfarben",
+    effect: "Metallic & Effektfarben",
+    neon: "Neonfarben",
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    const firstColorInCategory = allColors.find(
+      (color) => color.category === category,
+    );
+    if (firstColorInCategory) {
+      setSelectedColorCode(firstColorInCategory.code);
+    }
+  };
+
+  const SwatchButton = ({ color }) => {
+    const isActive = selectedColorCode === color.code;
+    return (
+      <button
+        type="button"
+        onClick={() => setSelectedColorCode(color.code)}
+        title={`${color.name} (${color.code})`}
+        className={`h-10 rounded-md border transition ${
+          isActive
+            ? "border-black ring-2 ring-black"
+            : "border-zinc-200 hover:border-zinc-400"
+        }`}
         style={{ background: color.swatch }}
       />
-      <div className="text-sm text-zinc-900">{color.name}</div>
-      {/* <div className="text-xs text-zinc-500">Farbe-code: {color.code}</div> */}
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900">
-      {/* <section className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-2 md:px-10 lg:px-12">
-          <div className="flex flex-col justify-center">
-            <div className="mb-4 inline-flex w-fit rounded-full bg-zinc-100 px-3 py-1 text-xs font-medium text-zinc-700">
-              Flexfolie • Schnellpressung • Premium PU
-            </div>
-
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-              POLI-FLEX® TURBO
-            </h1>
-
-            <p className="mt-5 max-w-xl text-base leading-7 text-zinc-600 md:text-lg">
-              Die leistungsstarke Textiltransferfolie für besonders kurze
-              Presszeiten, niedrige Verarbeitungstemperaturen und saubere
-              Ergebnisse auf Baumwolle, Polyester und Mischgeweben.
-            </p>
-
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {[
-                ["3–5 Sek.", "Presszeit"],
-                ["ab 130 °C", "Temperatur"],
-                ["60 °C", "waschbeständig"],
-                ["matt", "Oberfläche"],
-              ].map(([value, label]) => (
-                <div key={label} className="rounded-2xl bg-zinc-100 p-4">
-                  <div className="text-lg font-bold">{value}</div>
-                  <div className="text-sm text-zinc-600">{label}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button className="rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:opacity-90">
-                Farben ansehen
+    <div className="min-h-screen bg-[#f5f5f5] text-zinc-900">
+      <section className="mx-auto max-w-7xl px-6 py-10 md:px-10 lg:px-12">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-6 md:grid-cols-[72px_minmax(0,1fr)]">
+            <div className="hidden md:flex md:flex-col md:items-center md:gap-4">
+              <button
+                type="button"
+                className="text-zinc-400 transition hover:text-zinc-700"
+              >
+                ▲
               </button>
-              <button className="rounded-2xl border border-zinc-300 bg-white px-5 py-3 text-sm font-medium text-zinc-900 transition hover:bg-zinc-100">
-                Datenblatt anfordern
+
+              <div className="flex h-14 w-14 items-center justify-center rounded border border-zinc-300 bg-white p-1">
+                <img
+                  src="https://shop.printequipment.de/media/8b/bb/78/1749629557/po-tu-web-01.webp"
+                  alt="POLI-FLEX TURBO Vorschaubild"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              <button
+                type="button"
+                className="text-zinc-400 transition hover:text-zinc-700"
+              >
+                ▼
               </button>
             </div>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-zinc-200">
-              <div className="mb-4 aspect-[4/3] rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-700 p-6 text-white">
-                <div className="text-sm uppercase tracking-[0.2em] text-zinc-300">
+            <div>
+              <div className="overflow-hidden bg-white">
+                <div className="aspect-square w-full">
                   <img
                     src="https://shop.printequipment.de/media/8b/bb/78/1749629557/po-tu-web-01.webp"
                     alt="POLI-FLEX TURBO"
+                    className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="mt-8 text-3xl font-bold">Turbo</div>
-                <div className="mt-2 max-w-[14rem] text-sm text-zinc-200">
-                  Premium Flexfolie für effiziente Produktion und starke
-                  Haftung.
-                </div>
               </div>
-              <div className="text-sm text-zinc-500">
-                Musterdarstellung für eure Produktseite
+
+              <div className="mt-6 flex justify-center">
+                <span className="inline-block h-3 w-3 rounded-full border border-zinc-700 bg-white" />
               </div>
             </div>
+          </div>
 
-            <div className="space-y-4">
-              <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-zinc-200">
-                <div className="text-sm font-semibold text-zinc-900">
-                  Vorteile
+          <div className="self-start">
+            <div className="max-w-xl">
+              <h1 className="text-3xl font-bold leading-tight md:text-4xl">
+                POLI-FLEX® TURBO®
+              </h1>
+
+              <div className="mt-6">
+                <div className="text-4xl font-semibold">26,00 €*</div>
+                <div className="mt-1 text-xs text-zinc-500">
+                  Preise exkl. MwSt. zzgl. Versandkosten
                 </div>
-                <ul className="mt-3 space-y-2 text-sm text-zinc-600">
-                  <li>• Kurze Presszeit für hohe Produktivität</li>
-                  <li>• Niedrige Temperatur für empfindliche Textilien</li>
-                  <li>• Sehr gute Entgittereigenschaften</li>
-                  <li>• Angenehm weicher Griff</li>
-                </ul>
               </div>
 
-              <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-zinc-200">
-                <div className="text-sm font-semibold text-zinc-900">
-                  Geeignet für
+              <div className="mt-4 text-sm font-semibold uppercase tracking-wide">
+                Art-Nr: PO-TU-{selectedColor.code}-
+                {selectedSize.value.includes("25") ? "25" : "05"}
+              </div>
+
+              <div className="mt-4 rounded-full bg-green-600 px-5 py-2 text-sm font-semibold text-white">
+                Verfügbarer Bestand: 35 Rll
+              </div>
+
+              <div className="mt-8">
+                <div className="mb-3 text-sm font-bold">1: Größe PO-TU-</div>
+
+                <div className="flex flex-wrap gap-3">
+                  {sizes.map((size) => {
+                    const active = selectedSize.value === size.value;
+                    return (
+                      <button
+                        key={size.value}
+                        type="button"
+                        onClick={() => setSelectedSize(size)}
+                        className={`rounded-full border px-4 py-2 text-sm transition ${
+                          active
+                            ? "border-black bg-black text-white"
+                            : "border-zinc-300 bg-white text-zinc-900 hover:border-zinc-500"
+                        }`}
+                      >
+                        {size.label}
+                      </button>
+                    );
+                  })}
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2 text-sm">
+              </div>
+
+              <div className="mt-8">
+                <div className="mb-3 text-sm font-bold">
+                  2: Farbkategorie wählen
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                   {[
-                    "T-Shirts",
-                    "Sporttextilien",
-                    "Workwear",
-                    "Baumwolle",
-                    "Polyester",
-                    "Mischgewebe",
-                  ].map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full bg-zinc-100 px-3 py-1 text-zinc-700"
-                    >
-                      {item}
-                    </span>
-                  ))}
+                    { key: "standard", label: "Standardfarben" },
+                    { key: "effect", label: "Metallic & Effekt" },
+                    { key: "neon", label: "Neonfarben" },
+                  ].map((item) => {
+                    const active = selectedCategory === item.key;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => handleCategoryChange(item.key)}
+                        className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
+                          active
+                            ? "border-black bg-black text-white"
+                            : "border-zinc-300 bg-white text-zinc-800 hover:border-zinc-500"
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
 
-      <section className="mx-auto max-w-7xl px-6 py-14 md:px-10 lg:px-12">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="w-full">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-              Farbauswahl
-            </h2>
+              <div className="mt-8">
+                <div className="mb-3 text-sm font-bold">
+                  3: Farben Flexfolie PO-TU-
+                </div>
 
-            <p className="mt-2 text-zinc-600">
-              Übersichtlich gegliedert in Standard-, Effekt- und Neonfarben.
-            </p>
+                <div className="rounded-md bg-white p-4 ring-1 ring-zinc-200">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    {categoryColors.map((color) => (
+                      <SwatchButton key={color.code} color={color} />
+                    ))}
+                  </div>
+                </div>
 
-            <div className="mt-4">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full max-w-sm rounded-xl border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 shadow-sm outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
+                <div className="mt-4">
+                  <select
+                    value={selectedColorCode}
+                    onChange={(e) => setSelectedColorCode(e.target.value)}
+                    className="w-full rounded-md border border-zinc-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-zinc-500"
+                  >
+                    {filteredColorOptions.map((color) => (
+                      <option key={color.code} value={color.code}>
+                        {color.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mt-3 bg-white px-4 py-3 text-sm text-zinc-600 ring-1 ring-zinc-200">
+                  <div className="font-semibold text-zinc-900">
+                    Bitte wähle eine Farbe aus.
+                  </div>
+                  <div>Farben können vom Original abweichen.</div>
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-4 md:grid-cols-[94px_1fr_1fr]">
+                <input
+                  type="number"
+                  min="1"
+                  defaultValue="1"
+                  className="h-12 rounded-full border border-zinc-300 bg-white px-4 text-sm outline-none"
+                />
+
+                <div className="flex h-12 items-center rounded-full bg-zinc-100 px-5 text-sm">
+                  <span className="font-semibold">Rllpreis</span>
+                  <span className="ml-3">--</span>
+                </div>
+
+                <div className="flex h-12 items-center rounded-full bg-zinc-100 px-5 text-sm">
+                  <span className="font-semibold">Gesamtpreis</span>
+                  <span className="ml-3">{totalPrice} €</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="mt-6 w-full rounded-full bg-black px-6 py-4 text-sm font-bold uppercase tracking-wider text-white transition hover:opacity-90"
               >
-                <option value="all">Alle Farben</option>
-                <option value="standard">Standardfarben</option>
-                <option value="effect">Metallic & Effektfarben</option>
-                <option value="neon">Neonfarben</option>
-              </select>
+                In den Warenkorb
+              </button>
+
+              <button
+                type="button"
+                className="mt-4 inline-flex items-center gap-2 text-sm text-zinc-700 transition hover:text-black"
+              >
+                <span>♡</span>
+                <span>Zum Merkzettel hinzufügen</span>
+              </button>
             </div>
           </div>
-
-          <div className="bg-white px-4 py-2 text-sm text-zinc-500 ring-1 ring-zinc-200">
-            <div className="font-semibold">Bitte wähle eine Farbe aus.</div>{" "}
-            <div className="text-sm">Farben können vom Original abweichen.</div>
-          </div>
-        </div>
-
-        <div className="space-y-10">
-          {(selectedCategory === "all" || selectedCategory === "standard") && (
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Standardfarben</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
-                {standardColors.map((color) => (
-                  <ColorCard key={color.code} color={color} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(selectedCategory === "all" || selectedCategory === "effect") && (
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">
-                Metallic & Effektfarben
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {effectColors.map((color) => (
-                  <ColorCard key={color.code} color={color} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(selectedCategory === "all" || selectedCategory === "neon") && (
-            <div>
-              <h3 className="mb-4 text-lg font-semibold">Neonfarben</h3>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {neonColors.map((color) => (
-                  <ColorCard key={color.code} color={color} />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* <section className="border-y border-zinc-200 bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-14 md:px-10 lg:px-12">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Technische Informationen
-          </h2>
+      <section className="bg-[#eeeeee] py-10">
+        <div className="mx-auto grid max-w-7xl gap-6 px-6 md:px-10 lg:grid-cols-2 lg:px-12">
+          <div className="bg-white p-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide">
+              Produktinformationen
+            </h2>
 
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              ["Material", "PU-Transferfolie"],
-              ["Oberfläche", "Matt"],
-              ["Transfer", "Warm abziehbar"],
-              ["Pflege", "Waschbar bis 60 °C"],
-              ["Verarbeitung", "Plotten & entgittern"],
-              ["Einsatz", "Textilien & Veredelung"],
-              ["Verpressung", "Kurz & energiesparend"],
-              ["Besonderheit", "Hohe Elastizität"],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded-2xl bg-zinc-50 p-5 ring-1 ring-zinc-200"
-              >
-                <div className="text-sm text-zinc-500">{label}</div>
-                <div className="mt-1 font-semibold text-zinc-900">{value}</div>
-              </div>
-            ))}
+            <div className="mt-6 space-y-4 text-sm leading-7 text-zinc-700">
+              <p>
+                POLI-FLEX® TURBO® ist eine gegossene Polyurethan-Folie mit einem
+                Co-Polyester-Heißschmelzkleber. Dank des stark rückklebenden
+                Trägers ist ein sicheres Positionieren einfach umsetzbar. Ebenso
+                lassen sich feinste Details mühelos schneiden und entgittern.
+              </p>
+
+              <p>
+                TURBO® Folien helfen durch kurze Übertragungszeit und niedrige
+                Temperatur Energie zu sparen und Kosten zu senken.
+              </p>
+
+              <ul className="space-y-1">
+                <li>- Erhältlich in 15 Farben</li>
+                <li>
+                  - Kurze Übertragungszeit und niedrige Temperatur
+                  (Standard-Textilien: 130 °C für nur 5 Sekunden bzw. 160 °C für
+                  nur 3 Sekunden)
+                </li>
+                <li>
+                  - Anti-Sublimation Eigenschaften: Die kurze Verarbeitungszeit
+                  reduziert die Sublimation-Tinten-Wanderung
+                </li>
+                <li>- 95 µm für eine sehr gute Opazität</li>
+                <li>- Keine Verbrennungen und Plattenabdrücke</li>
+                <li>- Weiche, angenehme textile Haptik</li>
+                <li>- Übereinander verpressbar</li>
+                <li>- Exzellente Waschbarkeit bis 60 °C</li>
+                <li>- Kann mit Lasergeräten geschnitten werden</li>
+                <li>
+                  - Zertifiziert nach OEKO-TEX® Standard 100, Produktklasse 1
+                </li>
+                <li>- Vegan PO-TU-</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-white p-8">
+            <h2 className="text-sm font-bold uppercase tracking-wide">
+              Eigenschaften
+            </h2>
+
+            <div className="mt-6 divide-y divide-zinc-200 border-y border-zinc-200">
+              {[
+                ["Ausführung:", "Flex"],
+                [
+                  "Einsatzgebiet:",
+                  "BW/PES-Mischgewebe, Polyester, Sportbekleidung",
+                ],
+                ["Farbe:", selectedColor.name],
+                ["Materialzusammensetzung:", "PU"],
+                ["Produktdetails:", categoryLabels[selectedCategory]],
+                ["Reinigung:", "Waschbar bis 60 °C"],
+                ["Stärke:", "95 µ"],
+                ["Zertifizierung:", "ÖKOTEX Standard 100"],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="grid grid-cols-[180px_1fr] gap-4 py-4 text-sm"
+                >
+                  <div className="font-semibold text-zinc-900">{label}</div>
+                  <div className="text-zinc-700">{value}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </section> */}
-
-      {/* <section className="mx-auto max-w-7xl px-6 py-14 md:px-10 lg:px-12">
-        <div className="rounded-[2rem] bg-zinc-900 px-8 py-10 text-white shadow-sm">
-          <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Sauber präsentiert. Schnell verstanden. Direkt verkaufsstark.
-          </h2>
-          <p className="mt-4 max-w-3xl text-zinc-300">
-            Diese Musterseite ist bewusst moderner aufgebaut als eine klassische
-            Artikelliste: mit starkem Einstieg, klaren Vorteilen, technischer
-            Übersicht und einer Farbdarstellung, die deutlich hochwertiger
-            wirkt.
-          </p>
-        </div>
-      </section> */}
+      </section>
     </div>
   );
 }
