@@ -54,7 +54,7 @@ export default function PoliFlexTurboSamplePage() {
       allColors.find((color) => color.code === selectedColorCode) ||
       allColors[0]
     );
-  }, [allColors, selectedColorCode]);
+  }, [selectedColorCode]);
 
   const totalPrice = (selectedSize.price * quantity)
     .toFixed(2)
@@ -69,14 +69,17 @@ export default function PoliFlexTurboSamplePage() {
       <button
         type="button"
         onClick={() => setSelectedColorCode(color.code)}
-        title={`${color.name} (${color.code})`}
-        className={`h-[1.3rem] rounded-md border transition ${
+        className={`group relative h-[1.3rem] rounded-md border transition ${
           isActive
             ? "border-black ring-2 ring-black"
             : "border-zinc-200 hover:border-zinc-400"
         }`}
         style={{ background: color.swatch }}
-      />
+      >
+        <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-700 px-3 py-2 text-sm font-semibold text-white shadow-lg group-hover:block">
+          {color.code} - {color.name.toUpperCase()}
+        </span>
+      </button>
     );
   };
 
@@ -177,7 +180,7 @@ export default function PoliFlexTurboSamplePage() {
                   2: Farben Flexfolie PO-TU-
                 </div>
 
-                <div className="rounded-md bg-white p-4 ring-1 ring-zinc-200">
+                <div className="overflow-visible rounded-md bg-white p-4 ring-1 ring-zinc-200">
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                     {allColors.map((color) => (
                       <SwatchButton key={color.code} color={color} />
